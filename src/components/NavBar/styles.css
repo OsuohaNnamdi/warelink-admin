@@ -1,0 +1,10 @@
+.logo-size {
+    width: 170px; /* Set desired width */
+    height: auto; /* Maintains aspect ratio */
+    max-width: 1900%; /* Ensures it scales within container */
+}
+.logos-size {
+    width: 100px; /* Set desired width */
+    height: auto; /* Maintains aspect ratio */
+    max-width: 100%; /* Ensures it scales within container */
+}
