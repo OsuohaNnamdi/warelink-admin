@@ -208,7 +208,7 @@ export const SingleOrder = () => {
                                                     <br />
                                                     Order Date: <span className="text-dark">{order.created_at}</span>
                                                     <br />
-                                                    Order Total: <span className="text-dark">${order.total_price}</span>
+                                                    Order Total: <span className="text-dark">₦ {Number(order.total_price).toLocaleString()}</span>
                                                 </p>
                                             </div>
                                         </div>
@@ -242,9 +242,9 @@ export const SingleOrder = () => {
                                                                 </div>
                                                             </a>
                                                         </td>
-                                                        <td><span className="text-body">${item.product.price}</span></td>
-                                                        <td>{item.product.quantity}</td>
-                                                        <td>${item.total}</td>
+                                                        <td><span className="text-body">₦ {Number(item.product.price).toLocaleString()}</span></td>
+                                                        <td>{item.quantity}</td>
+                                                        <td>₦ {Number(item.total).toLocaleString()}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>

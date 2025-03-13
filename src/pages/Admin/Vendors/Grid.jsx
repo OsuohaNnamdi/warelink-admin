@@ -10,7 +10,8 @@ export const Grid = () => {
     const [selectedVendor, setSelectedVendor] = useState(null);
     const [loading, setLoading] = useState(true); // Loading state
 
-    // Fetch vendors from the backend
+
+    
     useEffect(() => {
         const fetchVendors = async () => {
             setLoading(true); // Start loading
@@ -47,7 +48,7 @@ export const Grid = () => {
         if (result.isConfirmed) {
             setLoading(true); // Start loading
             try {
-                await Api.delete(`/api/vendors/${vendorId}/`);
+                await Api.delete(`/api/vendor/${vendorId}/`);
                 setVendors(vendors.filter((vendor) => vendor.id !== vendorId));
                 Swal.fire("Deleted!", "Your vendor has been deleted.", "success");
             } catch (error) {
@@ -73,7 +74,7 @@ export const Grid = () => {
     const handleUpdate = async (updatedVendor) => {
         setLoading(true); // Start loading
         try {
-            const response = await Api.patch(`/api/vendors/${updatedVendor.id}/`, updatedVendor);
+            const response = await Api.put(`/api/vendor/${updatedVendor.id}/`, updatedVendor);
             setVendors(vendors.map((vendor) => (vendor.id === updatedVendor.id ? response.data : vendor)));
             setEditModalOpen(false);
             Swal.fire("Updated!", "Your vendor has been updated.", "success");
@@ -148,13 +149,7 @@ export const Grid = () => {
                                         <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
                                     </svg>
                                 </a>
-                                <a href="/vendor-list" className="btn btn-light btn-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} height={18} fill="currentColor" className="bi bi-list-task" viewBox="0 0 16 16">
-                                        <path fillRule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z" />
-                                        <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z" />
-                                        <path fillRule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z" />
-                                    </svg>
-                                </a>
+                                
                             </div>
                         </div>
                     </div>

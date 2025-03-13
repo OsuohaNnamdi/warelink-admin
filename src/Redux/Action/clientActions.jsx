@@ -19,6 +19,7 @@ export function login(email, password) {
 
       dispatch({ type: LOGIN_SUCCESS, payload: data.access });
       sessionStorage.setItem("token", data.access);
+      sessionStorage.setItem("isAuthenticated", true);
 
       
       return data;

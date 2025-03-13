@@ -3,6 +3,9 @@ import { Api } from "../../../APIs/Api";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { ClipLoader } from "react-spinners"; // Import a spinner component
+import Modal from "react-modal"; // Import a modal component
+
+Modal.setAppElement("#root"); // Set the root element for accessibility
 
 export const OrderList = () => {
     const [orders, setOrders] = useState([]);
@@ -11,6 +14,8 @@ export const OrderList = () => {
     const [openDropdownId, setOpenDropdownId] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,7 +28,6 @@ export const OrderList = () => {
                     response = await Api.get(`/api/orders/${searchQuery}/`);
                     setOrders([response.data]);
                 } else {
-                    // Filter by status using /api/orders/?status={status}
                     response = await Api.get("/api/orders/", {
                         params: {
                             status: statusFilter,
@@ -58,47 +62,49 @@ export const OrderList = () => {
         navigate(`/order/${orderId}`);
     };
 
-    const toggleDropdown = (productId) => {
+    const toggleDropdown = (e, productId) => {
+        e.stopPropagation(); // Prevent event propagation
         setOpenDropdownId(openDropdownId === productId ? null : productId);
     };
 
-    const handleDelete = async (productId) => {
-        const result = await Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-        });
-
-        if (result.isConfirmed) {
-            setLoading(true); // Start loading
-            try {
-                await Api.delete(`/api/product/${productId}/`);
-                setOrders(orders.filter(order => order.id !== productId));
-                Swal.fire("Deleted!", "Your order has been deleted.", "success");
-            } catch (error) {
-                console.error("Error deleting product:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Failed to delete order!",
-                });
-            } finally {
-                setLoading(false); // Stop loading
-            }
-        }
+    const openDeleteModal = (e, orderId) => {
+        e.stopPropagation(); // Prevent event propagation
+        setOrderToDelete(orderId);
+        setIsDeleteModalOpen(true);
     };
 
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false);
+        setOrderToDelete(null);
+    };
+
+    const handleDelete = async () => {
+        if (!orderToDelete) return;
+
+        setLoading(true); // Start loading
+        try {
+            await Api.delete(`/api/orders/${orderToDelete}/`);
+            setOrders(orders.filter(order => order.id !== orderToDelete));
+            Swal.fire("Deleted!", "Your order has been deleted.", "success");
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Failed to delete order!",
+            });
+        } finally {
+            setLoading(false); // Stop loading
+            closeDeleteModal();
+        }
+    };
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
     return (
-          <main className="main-content-wrapper">
+        <main className="main-content-wrapper">
             <div className="container">
                 <div className="row mb-8">
                     <div className="col-md-12">
@@ -189,16 +195,13 @@ export const OrderList = () => {
                                                             {order.status}
                                                         </span>
                                                     </td>
-                                                    <td>${order.total_price}</td>
+                                                    <td>₦ {Number(order.total_price).toLocaleString()}</td>
                                                     <td>
                                                         <div className="dropdown">
                                                             <a
                                                                 href="#"
                                                                 className="text-reset"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    toggleDropdown(order.id);
-                                                                }}
+                                                                onClick={(e) => toggleDropdown(e, order.id)}
                                                             >
                                                                 <i className="feather-icon icon-more-vertical fs-5" />
                                                             </a>
@@ -208,10 +211,7 @@ export const OrderList = () => {
                                                                         <a
                                                                             className="dropdown-item"
                                                                             href="#"
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                handleDelete(order.id);
-                                                                            }}
+                                                                            onClick={(e) => openDeleteModal(e, order.id)}
                                                                         >
                                                                             <i className="bi bi-trash me-3" />
                                                                             Delete
@@ -243,11 +243,41 @@ export const OrderList = () => {
                     </div>
                 </div>
             </div>
-             {loading && (
-                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 9999 }}>
-                                <ClipLoader color="#36d7b7" size={50} />
-                            </div>
-                        )}
+            {loading && (
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 9999 }}>
+                    <ClipLoader color="#36d7b7" size={50} />
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onRequestClose={closeDeleteModal}
+                contentLabel="Delete Confirmation Modal"
+                style={{
+                    content: {
+                        top: "50%",
+                        left: "50%",
+                        right: "auto",
+                        bottom: "auto",
+                        marginRight: "-50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "400px",
+                        padding: "20px",
+                    },
+                }}
+            >
+                <h2>Are you sure?</h2>
+                <p>You won't be able to revert this!</p>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                    <button onClick={closeDeleteModal} style={{ padding: "8px 16px", backgroundColor: "#ccc", border: "none", borderRadius: "4px" }}>
+                        Cancel
+                    </button>
+                    <button onClick={handleDelete} style={{ padding: "8px 16px", backgroundColor: "#d33", color: "#fff", border: "none", borderRadius: "4px" }}>
+                        Delete
+                    </button>
+                </div>
+            </Modal>
         </main>
     );
 };

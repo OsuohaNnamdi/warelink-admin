@@ -13,7 +13,15 @@ export const AddProducts = () => {
     meta_description: "",
     quantity: 0,
     main_image: null,
-    ordered_images: [],
+    other_images_data: [],
+    promo: false,
+    promo_price: 0.0,
+    promo_image: "",
+    processor: "",
+    ram: "",
+    storage: "",
+    display: "",
+    os: ""
   });
 
   const [categories, setCategories] = useState([]);
@@ -114,7 +122,15 @@ export const AddProducts = () => {
         meta_description: "",
         quantity: 0,
         main_image: null,
-        ordered_images: [],
+        other_images_data: [],
+        promo: false,
+        promo_price: 0.0,
+        promo_image: "",
+        processor: "",
+        ram: "",
+        storage: "",
+        display: "",
+        os: ""
       });
     } catch (error) {
       console.error(error.response ? error.response.data : error);
@@ -128,14 +144,6 @@ export const AddProducts = () => {
     }
   };
 
-  // Render the spinner when loading
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <ClipLoader color="#36d7b7" size={50} />
-      </div>
-    );
-  }
 
   return (
     <main className="main-content-wrapper">
@@ -244,7 +252,7 @@ export const AddProducts = () => {
                     <input
                       type="file"
                       className="form-control"
-                      name="ordered_images"
+                      name="other_images_dat"
                       multiple
                       onChange={handleImageChange}
                     />
@@ -269,26 +277,60 @@ export const AddProducts = () => {
             <div className="col-lg-4 col-12">
               <div className="card mb-6 card-lg">
                 <div className="card-body p-6">
-                  <h4 className="mb-4 h5">Meta Data</h4>
+                  <h4 className="mb-4 h5">Laptop Specifications</h4>
                   <div className="mb-3">
-                    <label className="form-label">Meta Title</label>
+                    <label className="form-label">Processor</label>
                     <input
                       type="text"
                       className="form-control"
-                      placeholder="Meta Title"
-                      name="meta_title"
-                      value={productData.meta_title}
+                      placeholder="Processor"
+                      name="processor"
+                      value={productData.processor}
                       onChange={handleInputChange}
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="form-label">Meta Description</label>
-                    <textarea
+                    <label className="form-label">RAM Size</label>
+                    <input
+                      type="text"
                       className="form-control"
-                      name="meta_description"
-                      value={productData.meta_description}
+                      placeholder="RAM Size"
+                      name="ram"
+                      value={productData.ram}
                       onChange={handleInputChange}
-                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Storage Size</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Storage Size"
+                      name="storage"
+                      value={productData.storage}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Display Size</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Display Size"
+                      name="display"
+                      value={productData.display}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Configured OPerating System</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Operating System"
+                      name="os"
+                      value={productData.os}
+                      onChange={handleInputChange}
                     />
                   </div>
                 </div>
@@ -300,6 +342,12 @@ export const AddProducts = () => {
             {loading ? <ClipLoader color="#ffffff" size={20} /> : "Add Product"}
           </button>
         </form>
+
+         {loading && (
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 9999 }}>
+                            <ClipLoader color="#36d7b7" size={50} />
+                        </div>
+                    )}
       </div>
     </main>
   );

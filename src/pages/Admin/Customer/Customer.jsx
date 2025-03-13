@@ -72,7 +72,7 @@ export const Customer = () => {
     const handleUpdate = async (updatedCustomer) => {
         setLoading(true); // Start loading
         try {
-            const response = await Api.put(`/api/customer/${updatedCustomer.id}`, updatedCustomer);
+            const response = await Api.put(`/api/customer/${updatedCustomer.id}/`, updatedCustomer);
             setCustomers(customers.map((customer) => (customer.id === updatedCustomer.id ? response.data : customer)));
             setEditModalOpen(false);
             Swal.fire("Updated!", "Your customer has been updated.", "success");
@@ -107,22 +107,15 @@ export const Customer = () => {
                                     <h2>Customers</h2>
                                     <nav aria-label="breadcrumb">
                                         <ol className="breadcrumb mb-0">
-                                            <li className="breadcrumb-item">
-                                                <a href="#" className="text-inherit">
-                                                    Dashboard
-                                                </a>
-                                            </li>
-                                            <li className="breadcrumb-item active" aria-current="page">
-                                                Customers
-                                            </li>
+                                            <a href="/" className="text-inherit">
+                                                Dashboard
+                                            </a>
+                                            <span style={{ marginLeft: "8px", marginRight: "8px" }}>&gt;</span>
+                                            <a>Customers</a>
                                         </ol>
-                                    </nav>
+                                </nav>
                                 </div>
-                                <div>
-                                    <a href="create-customers.html" className="btn btn-primary">
-                                        Add New Customer
-                                    </a>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

@@ -2,14 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Api } from "../../../APIs/Api";
 import { Modal, Button, Form } from "react-bootstrap"; // Import Bootstrap Modal
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { ClipLoader } from "react-spinners"; 
-
-
+import { ClipLoader } from "react-spinners";
 
 export const Product = () => {
     const [products, setProducts] = useState([]); // All products
     const [filteredProducts, setFilteredProducts] = useState([]); // Filtered products
     const [categories, setCategories] = useState([]); // Categories
+    const [category, setCategory] = useState({});
     const [selectedCategory, setSelectedCategory] = useState(""); // Selected category
     const [searchTerm, setSearchTerm] = useState(""); // Search term
     const [openDropdownId, setOpenDropdownId] = useState(null); // Track which dropdown is open
@@ -21,50 +20,12 @@ export const Product = () => {
         quantity: "",
         category: ""
     });
-
-    // Fetch products and categories on component mount
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch products
-                const productResponse = await Api.get('/api/product/');
-                setProducts(productResponse.data);
-                setFilteredProducts(productResponse.data);
-
-                // Fetch categories
-                const categoryResponse = await Api.get('/api/category/');
-                setCategories(categoryResponse.data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    // Handle category selection
-    const handleCategoryChange = async (e) => {
-        const category = e.target.value;
-        setSelectedCategory(category);
-
-        try {
-            const response = await Api.get('/api/product/search_by_category/', {
-                params: { category }
-            });
-            setFilteredProducts(response.data);
-        } catch (error) {
-            console.error("Error fetching filtered products:", error);
-        }
-    };
-
-    console.log(filteredProducts)
-
-    // Handle search input
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
-
-    // Filter products based on search term
+    const [showPromoteTypeModal, setShowPromoteTypeModal] = useState(false); // Control promote type modal visibility
+    const [showPromoteDetailsModal, setShowPromoteDetailsModal] = useState(false); // Control promote details modal visibility
+    const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for promotion
+    const [promotionType, setPromotionType] = useState(""); // Major or Minor promotion
+    const [promoPrice, setPromoPrice] = useState(""); // Promo price
+    const [promoImage, setPromoImage] = useState(null); // Promo image (file)
     const [loading, setLoading] = useState(false); // Loading state
 
     // Fetch products and categories on component mount
@@ -90,8 +51,40 @@ export const Product = () => {
             }
         };
 
+        Api.get('/api/category/')
+            .then(response => {
+                const categoriesData = response.data.reduce((acc, category) => {
+                    acc[category.id] = category.name;
+                    return acc;
+                }, {});
+                setCategory(categoriesData);
+            })
+            .catch(error => {
+                console.error("There was an error fetching the categories!", error);
+            });
+
         fetchData();
     }, []);
+
+    // Handle category selection
+    const handleCategoryChange = async (e) => {
+        const category = e.target.value;
+        setSelectedCategory(category);
+
+        try {
+            const response = await Api.get('/api/product/search_by_category/', {
+                params: { category }
+            });
+            setFilteredProducts(response.data);
+        } catch (error) {
+            console.error("Error fetching filtered products:", error);
+        }
+    };
+
+    // Handle search input
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
 
     // Handle delete product with SweetAlert confirmation
     const handleDelete = async (productId) => {
@@ -165,7 +158,6 @@ export const Product = () => {
         setEditingProduct({ ...editingProduct, [name]: value });
     };
 
-    
     // Toggle dropdown visibility
     const toggleDropdown = (productId) => {
         setOpenDropdownId(openDropdownId === productId ? null : productId);
@@ -182,6 +174,52 @@ export const Product = () => {
         document.addEventListener("click", handleClickOutside);
         return () => document.removeEventListener("click", handleClickOutside);
     }, []);
+
+    // Handle promote button click
+    const handlePromote = (product) => {
+        setSelectedProduct(product); // Set the selected product
+        setShowPromoteTypeModal(true); // Open the promote type modal
+        setOpenDropdownId(null); // Close the dropdown
+    };
+
+    // Handle promotion type selection
+    const handlePromotionTypeSelection = (type) => {
+        setPromotionType(type);
+        setShowPromoteTypeModal(false); // Close the promote type modal
+        setShowPromoteDetailsModal(true); // Open the promote details modal
+    };
+
+    // Handle promotion submission
+    const handlePromotionSubmit = async () => {
+        setLoading(true); // Start loading
+        try {
+            const formData = new FormData();
+            formData.append("promo_price", promoPrice);
+            formData.append("promo", true);
+            if (promoImage) {
+                formData.append("promo_image", promoImage);
+            }
+
+            await Api.patch(`/api/product/${selectedProduct.id}/`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            setShowPromoteDetailsModal(false);
+            Swal.fire('Promoted!', 'Your product has been promoted.', 'success');
+        } catch (error) {
+            console.error("Error promoting product:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Failed to promote product!',
+            });
+        } finally {
+            setLoading(false); // Stop loading
+            setPromoImage(null); // Clear the file input
+        }
+    };
 
     return (
         <main className="main-content-wrapper">
@@ -280,13 +318,13 @@ export const Product = () => {
                                                         <a href="#!"><img src={product.main_image} alt className="icon-shape icon-md" /></a>
                                                     </td>
                                                     <td><a href="#" className="text-reset">{product.name}</a></td>
-                                                    <td>{product.category}</td>
+                                                    <td>{category[product.category] || 'Uncategorized'}</td>
                                                     <td>
                                                         <span className={`badge bg-light-${product.quantity > 1 ? 'primary' : product.quantity === 0 ? 'danger' : 'warning'} text-dark-${product.quantity > 1 ? 'primary' : product.quantity === 0 ? 'danger' : 'warning'}`}>
                                                             {product.quantity}
                                                         </span>
                                                     </td>
-                                                    <td>${product.price}</td>
+                                                    <td>₦ {Number(product.price).toLocaleString()}</td>
                                                     <td>{product.created_at}</td>
                                                     <td>
                                                         <div className="dropdown">
@@ -302,6 +340,19 @@ export const Product = () => {
                                                             </a>
                                                             {openDropdownId === product.id && (
                                                                 <ul className="dropdown-menu show" style={{ top: "auto", bottom: "100%", left: "50%", transform: "translateX(-50%)" }}>
+                                                                    <li>
+                                                                        <a
+                                                                            className="dropdown-item"
+                                                                            href="#"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                handlePromote(product);
+                                                                            }}
+                                                                        >
+                                                                            <i className="bi bi-megaphone me-3" />
+                                                                            Promote
+                                                                        </a>
+                                                                    </li>
                                                                     <li>
                                                                         <a
                                                                             className="dropdown-item"
@@ -356,6 +407,7 @@ export const Product = () => {
                 </div>
             </div>
 
+            {/* Edit Product Modal */}
             <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Product</Modal.Title>
@@ -409,7 +461,7 @@ export const Product = () => {
                                         </option>
                                     ))}
                                 </Form.Control>
-                            </Form.Group> 
+                            </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Description</Form.Label>
                                 <Form.Control
@@ -428,6 +480,60 @@ export const Product = () => {
                 </Modal.Body>
             </Modal>
 
+            {/* Promote Type Modal */}
+            <Modal show={showPromoteTypeModal} onHide={() => setShowPromoteTypeModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Select Promotion Type</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Button
+                        variant="primary"
+                        onClick={() => handlePromotionTypeSelection("Major")}
+                        style={{ marginRight: "10px" }}
+                    >
+                        Major Promotion
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={() => handlePromotionTypeSelection("Minor")}
+                    >
+                        Minor Promotion
+                    </Button>
+                </Modal.Body>
+            </Modal>
+
+            {/* Promote Details Modal */}
+            <Modal show={showPromoteDetailsModal} onHide={() => setShowPromoteDetailsModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Promote Product</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Promo Price</Form.Label>
+                            <Form.Control
+                                type="number"
+                                value={promoPrice}
+                                onChange={(e) => setPromoPrice(e.target.value)}
+                                required
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Promo Image</Form.Label>
+                            <Form.Control
+                                type="file"
+                                onChange={(e) => setPromoImage(e.target.files[0])}
+                                required
+                            />
+                        </Form.Group>
+                        <Button variant="primary" onClick={handlePromotionSubmit}>
+                            Submit Promotion
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            {/* Loading Spinner */}
             {loading && (
                 <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 9999 }}>
                     <ClipLoader color="#36d7b7" size={50} />

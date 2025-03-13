@@ -12,32 +12,112 @@ import { Customer } from './pages/Admin/Customer/Customer';
 import { Grid } from './pages/Admin/Vendors/Grid';
 import { Reviews } from './pages/Admin/Reviews';
 import { Login } from './pages/Authetication/Login';
+import { useState, useEffect } from 'react';
 
 function App() {
   const location = useLocation();
 
-  // Define paths where the navbar should not appear
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+
+  const ProtectedRoute = ({ children }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
+    return children;
+  };
+
   const noNavbarPaths = ["/", "/login", "/error"];
 
   return (
     <div className="App">
       <div className="main-wrapper">
-        { !noNavbarPaths.includes(location.pathname) && <AdminNavbar /> }
+        {!noNavbarPaths.includes(location.pathname) && <AdminNavbar />}
 
         <Routes>
-          <Route path="/admin" element={<AdminHomepage />} />
           <Route path="/" element={<Login />} />
-          <Route path="/product" element={<Product />} />
-          <Route path="/add-product" element={<AddProducts />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/add-categories" element={<AddCategories />} />
-          <Route path="/orders" element={<OrderList />} />
-          <Route path="/order/:orderId" element={<SingleOrder />} />
-          <Route path="/customer" element={<Customer />} />
-          <Route path="/vendor-grid" element={<Grid />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="*" element={<Navigate to="/error" />} />
           <Route path="/error" element={<Error />} />
+          <Route path="*" element={<Navigate to="/error" />} />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminHomepage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product"
+            element={
+              <ProtectedRoute>
+                <Product />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-product"
+            element={
+              <ProtectedRoute>
+                <AddProducts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/categories"
+            element={
+              <ProtectedRoute>
+                <Categories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-categories"
+            element={
+              <ProtectedRoute>
+                <AddCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <OrderList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order/:orderId"
+            element={
+              <ProtectedRoute>
+                <SingleOrder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/customer"
+            element={
+              <ProtectedRoute>
+                <Customer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/vendor-grid"
+            element={
+              <ProtectedRoute>
+                <Grid />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reviews"
+            element={
+              <ProtectedRoute>
+                <Reviews />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </div>
