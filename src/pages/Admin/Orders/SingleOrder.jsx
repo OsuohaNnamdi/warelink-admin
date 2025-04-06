@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { ClipLoader } from "react-spinners"; // Import a spinner component
 
+
 export const SingleOrder = () => {
     const { orderId } = useParams();
     const [order, setOrder] = useState(null);
@@ -11,7 +12,123 @@ export const SingleOrder = () => {
     const [error, setError] = useState(null);
     const [status, setStatus] = useState("");
     const [notes, setNotes] = useState("");
-    const navigate = useNavigate();
+
+    const handleDownloadInvoice = async () => {
+        setLoading(true);
+        try {
+            // Dynamic imports
+            const { default: jsPDF } = await import('jspdf');
+            const autoTable = await import('jspdf-autotable');
+            
+            const doc = new jsPDF();
+            doc.autoTable = autoTable.default;
+    
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40, 40, 40);
+            doc.text('INVOICE', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Order #${order.id}`, 105, 30, { align: 'center' });
+            
+            // Company info
+            doc.setFontSize(10);
+            doc.text('Your Company Name', 14, 40);
+            doc.text('yourwebsite.com', 14, 45);
+            doc.text('contact@yourcompany.com', 14, 50);
+            
+            // Order info
+            const formattedDate = new Date(order.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            doc.text(`Date: ${formattedDate}`, 160, 40);
+            doc.text(`Status: ${order.status.toUpperCase()}`, 160, 45);
+            doc.text(`Payment: ${order.payment_info}`, 160, 50);
+            
+            // Customer info
+            doc.setFontSize(12);
+            doc.setTextColor(40, 40, 40);
+            doc.text('BILL TO:', 14, 65);
+            
+            doc.setFontSize(10);
+            doc.text(`${order.customer_details.firstname} ${order.customer_details.lastname}`, 14, 70);
+            doc.text(order.customer_details.email, 14, 75);
+            
+            // Shipping address
+            doc.text('SHIPPING ADDRESS:', 14, 85);
+            doc.text(order.address.addressLine1, 14, 90);
+            doc.text(`${order.address.city}, ${order.address.state}`, 14, 95);
+            doc.text(order.address.phone, 14, 100);
+            
+            // Items table
+            const itemsData = order.order_items.map(item => [
+                item.product.name,
+                `₦${Number(item.product.price).toLocaleString()}`,
+                item.quantity,
+                `₦${Number(item.total).toLocaleString()}`
+            ]);
+            
+            doc.autoTable({
+                startY: 110,
+                head: [['Description', 'Unit Price', 'Qty', 'Total']],
+                body: itemsData,
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    cellPadding: 3,
+                    fontSize: 10,
+                    valign: 'middle'
+                },
+                columnStyles: {
+                    0: { cellWidth: 'auto' },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 20 },
+                    3: { cellWidth: 30 }
+                }
+            });
+            
+            // Summary
+            const finalY = doc.lastAutoTable.finalY + 10;
+            
+            doc.setFontSize(10);
+            doc.text('Subtotal:', 160, finalY);
+            doc.text(`₦${Number(order.total_price).toLocaleString()}`, 190, finalY, { align: 'right' });
+            
+            doc.text('Shipping:', 160, finalY + 5);
+            doc.text('₦0.00', 190, finalY + 5, { align: 'right' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Total:', 160, finalY + 15);
+            doc.text(`₦${Number(order.total_price).toLocaleString()}`, 190, finalY + 15, { align: 'right' });
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+            
+            // Save PDF
+            doc.save(`invoice_${order.id}.pdf`);
+            
+        } catch (err) {
+            console.error("Error generating invoice:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to generate invoice!",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+    
 
     useEffect(() => {
         const fetchOrder = async () => {
@@ -36,30 +153,7 @@ export const SingleOrder = () => {
         fetchOrder();
     }, [orderId]);
 
-    const handleDownloadInvoice = async () => {
-        setLoading(true); // Start loading
-        try {
-            const response = await Api.get(`/api/orders/${orderId}/invoice`, {
-                responseType: "blob",
-            });
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", `invoice_${orderId}.pdf`);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-        } catch (err) {
-            console.error("Error downloading invoice:", err);
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Failed to download invoice!",
-            });
-        } finally {
-            setLoading(false); // Stop loading
-        }
-    };
+
 
     const handleStatusChange = (e) => {
         setStatus(e.target.value); // Update status state
@@ -130,7 +224,7 @@ export const SingleOrder = () => {
                             <div className="card-body p-6">
                                 <div className="d-md-flex justify-content-between">
                                     <div className="d-flex align-items-center mb-2 mb-md-0">
-                                        <h2 className="mb-0">Order ID: #{order.id}</h2>
+                                        {/* <h2 className="mb-0">Order ID: #{order.id}</h2> */}
                                         <span
                                             className={`badge 
                                                 ${order.status === 'delivered' ? 'bg-success' : 
@@ -225,6 +319,7 @@ export const SingleOrder = () => {
                                                     <th>Price</th>
                                                     <th>Quantity</th>
                                                     <th>Total</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -245,6 +340,18 @@ export const SingleOrder = () => {
                                                         <td><span className="text-body">₦ {Number(item.product.price).toLocaleString()}</span></td>
                                                         <td>{item.quantity}</td>
                                                         <td>₦ {Number(item.total).toLocaleString()}</td>
+                                                        <td>
+                                                        <span className={`badge 
+                                                            ${item.status === 'delivered' ? 'bg-success' : 
+                                                            item.status === 'pending' ? 'bg-warning' : 
+                                                            item.status === 'processing' ? 'bg-info' : 
+                                                            item.status === 'shipped' ? 'bg-primary' : 
+                                                            item.status === 'cancelled' ? 'bg-danger' : 
+                                                            'bg-secondary'}`}
+                                                        >
+                                                            {item.status}
+                                                        </span>
+                                                        </td>
                                                     </tr>
                                                 ))}
                                             </tbody>

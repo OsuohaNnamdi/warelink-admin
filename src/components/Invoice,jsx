@@ -1,0 +1,123 @@
+ const handleDownloadInvoice = async () => {
+    setLoading(true);
+    try {
+        // Generate PDF on client side
+        const { jsPDF } = await import("jspdf");
+        await import("jspdf-autotable");
+
+        const doc = new jsPDF();
+        
+        // Add logo and header
+        doc.setFontSize(20);
+        doc.setTextColor(40, 40, 40);
+        doc.text('INVOICE', 105, 20, { align: 'center' });
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Order #${order.id}`, 105, 30, { align: 'center' });
+        
+        // Company info
+        doc.setFontSize(10);
+        doc.text('WareLink by Syntech', 14, 40);
+        doc.text('syntechticsolutions.com.ng', 14, 45);
+        doc.text('support@ware.link', 14, 50);
+        
+        // Order info
+        const formattedDate = new Date(order.created_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        doc.text(`Date: ${formattedDate}`, 160, 40);
+        doc.text(`Status: ${order.status.toUpperCase()}`, 160, 45);
+        doc.text(`Payment: ${order.payment_info}`, 160, 50);
+        
+        // Customer info
+        doc.setFontSize(12);
+        doc.setTextColor(40, 40, 40);
+        doc.text('BILL TO:', 14, 65);
+        
+        doc.setFontSize(10);
+        doc.text(`${order.customer_details.firstname} ${order.customer_details.lastname}`, 14, 70);
+        doc.text(order.customer_details.email, 14, 75);
+        
+        // Shipping address
+        doc.text('SHIPPING ADDRESS:', 14, 85);
+        doc.text(order.address.addressLine1, 14, 90);
+        doc.text(`${order.address.city}, ${order.address.state}`, 14, 95);
+        doc.text(order.address.phone, 14, 100);
+        
+        // Items table
+        const itemsData = order.order_items.map(item => [
+            item.product.name,
+            `₦${Number(item.product.price).toLocaleString()}`,
+            item.quantity,
+            `₦${Number(item.total).toLocaleString()}`
+        ]);
+        
+        doc.autoTable({
+            startY: 110,
+            head: [['Description', 'Unit Price', 'Qty', 'Total']],
+            body: itemsData,
+            headStyles: {
+                fillColor: [41, 128, 185],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            styles: {
+                cellPadding: 3,
+                fontSize: 10,
+                valign: 'middle'
+            },
+            columnStyles: {
+                0: { cellWidth: 'auto' },
+                1: { cellWidth: 30 },
+                2: { cellWidth: 20 },
+                3: { cellWidth: 30 }
+            }
+        });
+        
+        // Summary
+        const finalY = doc.lastAutoTable.finalY + 10;
+        
+        doc.setFontSize(10);
+        doc.text('Subtotal:', 160, finalY);
+        doc.text(`₦${Number(order.total_price).toLocaleString()}`, 190, finalY, { align: 'right' });
+        
+        doc.text('Shipping:', 160, finalY + 5);
+        doc.text('₦0.00', 190, finalY + 5, { align: 'right' });
+        
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('Total:', 160, finalY + 15);
+        doc.text(`₦${Number(order.total_price).toLocaleString()}`, 190, finalY + 15, { align: 'right' });
+        
+        // Notes
+        if (order.notes) {
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.text('Notes:', 14, finalY + 25);
+            doc.text(order.notes, 14, finalY + 30, { maxWidth: 180 });
+        }
+        
+        // Footer
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Thank you for your business!', 105, 280, { align: 'center' });
+        doc.text('WareLink - syntechticsolutions.com.ng', 105, 285, { align: 'center' });
+        
+        // Save the PDF
+        doc.save(`invoice_${order.id}.pdf`);
+        
+    } catch (err) {
+        console.error("Error generating invoice:", err);
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Failed to generate invoice!",
+        });
+    } finally {
+        setLoading(false);
+    }
+};

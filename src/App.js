@@ -12,7 +12,7 @@ import { Customer } from './pages/Admin/Customer/Customer';
 import { Grid } from './pages/Admin/Vendors/Grid';
 import { Reviews } from './pages/Admin/Reviews';
 import { Login } from './pages/Authetication/Login';
-import { useState, useEffect } from 'react';
+import { SupportPage } from './pages/Admin/SupportPage';
 
 function App() {
   const location = useLocation();
@@ -35,6 +35,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Login />} />
+          
           <Route path="/error" element={<Error />} />
           <Route path="*" element={<Navigate to="/error" />} />
 
@@ -47,7 +48,15 @@ function App() {
             }
           />
           <Route
-            path="/product"
+            path="/support"
+            element={
+              <ProtectedRoute>
+                <SupportPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/promotions"
             element={
               <ProtectedRoute>
                 <Product />

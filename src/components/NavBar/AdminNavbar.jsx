@@ -167,55 +167,76 @@ export const AdminNavbar = () => {
                     <li className="nav-item mt-6 mb-3">
                     <span className="nav-label">Store Managements</span>
                     </li>
+
                     <li className="nav-item">
-                    <a className="nav-link " href="/product">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-cart" /></span>
-                        <span className="nav-link-text">Products</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/promotions">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-megaphone-fill" /></span>
+                                <span className="nav-link-text">Promotions</span>
+                            </div>
+                        </a>
                     </li>
+                    
+                    {/* Categories */}
                     <li className="nav-item">
-                    <a className="nav-link " href="/categories">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-list-task" /></span>
-                        <span className="nav-link-text">Categories</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/categories">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-tags" /></span>
+                                <span className="nav-link-text">Categories</span>
+                            </div>
+                        </a>
                     </li>
+                    
+                    {/* Orders */}
                     <li className="nav-item">
-                    <a className="nav-link"  href="/orders">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-bag" /></span>
-                        <span className="nav-link-text">Orders</span>
-                        </div>
-                    </a>                   
+                        <a className="nav-link" href="/orders">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-receipt" /></span>
+                                <span className="nav-link-text">Orders</span>
+                            </div>
+                        </a>
                     </li>
+                    
+                    {/* Customers */}
                     <li className="nav-item">
-                    <a className="nav-link " href="/vendor-grid">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-shop" /></span>
-                        <span className="nav-link-text">Sellers / Vendors</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/customer">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-people-fill" /></span>
+                                <span className="nav-link-text">Customers</span>
+                            </div>
+                        </a>
                     </li>
+
+                    {/* Vendors */}
                     <li className="nav-item">
-                    <a className="nav-link " href="/customer">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-people" /></span>
-                        <span className="nav-link-text">Customers</span>
-                        <span className="badge bg-light-success text-dark-success ms-2">New</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/vendor-grid">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-shop-window" /></span>
+                                <span className="nav-link-text">Vendors</span>
+                            </div>
+                        </a>
                     </li>
+
                     <li className="nav-item">
-                    <a className="nav-link " href="/reviews">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-star" /></span>
-                        <span className="nav-link-text">Reviews</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/support">
+                            <div className="d-flex align-items-center">
+                            <span className="nav-link-icon"><i className="bi bi-envelope-fill" /></span>
+                            <span className="nav-link-text">Support</span>
+                            </div>
+                        </a>
                     </li>
+                    
+                    {/* Reviews */}
+                    <li className="nav-item">
+                        <a className="nav-link" href="/reviews">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-star-half" /></span>
+                                <span className="nav-link-text">Reviews</span>
+                            </div>
+                        </a>
+                    </li>
+                    
+                    
                 </ul>
                 </div>
             </div>
@@ -242,63 +263,61 @@ export const AdminNavbar = () => {
                     <span className="nav-label">Store Managements</span>
                     </li>
                     <li className="nav-item">
-                    <a className="nav-link " href="/product">
+                        <a className="nav-link" href="/categories">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-tags" /></span>
+                                <span className="nav-link-text">Categories</span>
+                            </div>
+                        </a>
+                    </li>
+                    
+                    {/* Orders */}
+                    <li className="nav-item">
+                        <a className="nav-link" href="/orders">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-receipt" /></span>
+                                <span className="nav-link-text">Orders</span>
+                            </div>
+                        </a>
+                    </li>
+                    
+                    {/* Customers */}
+                    <li className="nav-item">
+                        <a className="nav-link" href="/customer">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-people-fill" /></span>
+                                <span className="nav-link-text">Customers</span>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li className="nav-item">
+                    <a className="nav-link" href="/support">
                         <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-cart" /></span>
-                        <span className="nav-link-text">Products</span>
+                        <span className="nav-link-icon"><i className="bi bi-envelope-fill" /></span>
+                        <span className="nav-link-text">Support</span>
                         </div>
                     </a>
                     </li>
+                    
+                    {/* Reviews */}
                     <li className="nav-item">
-                    <a className="nav-link " href="/categories">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-list-task" /></span>
-                        <span className="nav-link-text">Categories</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/reviews">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-star-half" /></span>
+                                <span className="nav-link-text">Reviews</span>
+                            </div>
+                        </a>
                     </li>
+                    
+                    {/* Vendors */}
                     <li className="nav-item">
-                    <a className="nav-link  collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#navOrders" aria-expanded="false" aria-controls="navOrders">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-bag" /></span>
-                        <span className="nav-link-text">Orders</span>
-                        </div>
-                    </a>
-                    <div id="navOrders" className="collapse " data-bs-parent="#sideNavbar">
-                        <ul className="nav flex-column">
-                        <li className="nav-item">
-                            <a className="nav-link " href="/orders">List</a>
-                        </li>
-                        {/* Nav item */}
-                        <li className="nav-item">
-                            <a className="nav-link " href="/single-order">Single</a>
-                        </li>
-                        </ul>
-                    </div>
-                    </li>
-                    <li className="nav-item">
-                    <a className="nav-link " href="/vendor-grid">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-shop" /></span>
-                        <span className="nav-link-text">Sellers / Vendors</span>
-                        </div>
-                    </a>
-                    </li>
-                    <li className="nav-item">
-                    <a className="nav-link " href="/customer">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-people" /></span>
-                        <span className="nav-link-text">Customers</span>
-                        </div>
-                    </a>
-                    </li>
-                    <li className="nav-item">
-                    <a className="nav-link " href="/reviews">
-                        <div className="d-flex align-items-center">
-                        <span className="nav-link-icon"><i className="bi bi-star" /></span>
-                        <span className="nav-link-text">Reviews</span>
-                        </div>
-                    </a>
+                        <a className="nav-link" href="/vendor-grid">
+                            <div className="d-flex align-items-center">
+                                <span className="nav-link-icon"><i className="bi bi-shop-window" /></span>
+                                <span className="nav-link-text">Vendors</span>
+                            </div>
+                        </a>
                     </li>
                 </ul>
                 </div>
