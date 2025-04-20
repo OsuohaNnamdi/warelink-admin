@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Api } from "../../../APIs/Api";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { ClipLoader } from "react-spinners"; // Import a spinner component
 
