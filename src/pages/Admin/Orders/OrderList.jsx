@@ -5,7 +5,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import { ClipLoader } from "react-spinners"; // Import a spinner component
 import Modal from "react-modal"; // Import a modal component
 
-Modal.setAppElement("#root"); // Set the root element for accessibility
+Modal.setAppElement("#root"); 
 
 export const OrderList = () => {
     const [orders, setOrders] = useState([]);
